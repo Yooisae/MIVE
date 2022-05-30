@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "922825199080",
+    "project_id": "mive-8e842",
+    "storage_bucket": "mive-8e842.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:922825199080:android:e41615b474707e0aa0285d",
+        "android_client_info": {
+          "package_name": "com.example.mive"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "922825199080-7l0g3oue384f0t47a62fu0f5r3g06bbg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQKnH1Kvkrtzv7mqLFUEtzflytz7QVOTk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "922825199080-7l0g3oue384f0t47a62fu0f5r3g06bbg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
