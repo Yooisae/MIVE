@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:roundcheckbox/roundcheckbox.dart';
 
 class MiveWidgets{
   Drawer MiveDrawer(BuildContext context){
@@ -44,6 +45,12 @@ class MiveWidgets{
           ),
         ],
       ),
+    );
+  }
+
+  Row MiveCheckBox(BuildContext context, String title, bool checked){
+    return Row(
+
     );
   }
 

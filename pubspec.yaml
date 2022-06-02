@@ -32,6 +32,13 @@ dependencies:
   google_maps_flutter_platform_interface: ^2.1.7
   plugin_platform_interface: ^2.1.2
   stream_transform: ^2.0.0
+  location: ^4.4.0
+  permission_handler: ^9.2.0
+  dropdown_button2: ^1.4.0
+  flutter_time_picker_spinner: ^2.0.0
+  time_picker_widget: ^1.0.0+10
+  day_picker: ^2.1.1
+  roundcheckbox: ^2.0.4+1
 
 dev_dependencies:
   flutter_test:

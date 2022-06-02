@@ -44,8 +44,10 @@ class MemberProvider with ChangeNotifier, DiagnosticableTreeMixin {
               Member(
                 name: member.data()['name'].toString(),
                 start: member.data()['start'].toDate(),
-                end: member.data()['end'].toDate(),
+                duration: member.data()['duration'].toString(),
                 docId: member.id,
+                age: member.data()['age'],
+                isMan: member.data()['isMan'],
                 //recurrenceRule: 'FREQ=DAILY;INTERVAL=7;COUNT=10'
               ),
             );
@@ -57,27 +59,18 @@ class MemberProvider with ChangeNotifier, DiagnosticableTreeMixin {
     });
   }
 
-  void addMember(
-      String name,
-      DateTime start,
-      DateTime end,
-      ) async {
+  void addMember(Member member) async {
     Map<String, dynamic> scheduleInfo = <String, dynamic>{
-      "name": name,
-      "start": Timestamp.fromDate(start),
-      "end": Timestamp.fromDate(end),
+      "name": member.name,
+      "start": Timestamp.fromDate(member.start),
+      "duration": member.duration,
+      "age" : member.age,
+      "isMan" : member.isMan
     };
-    members.add(
-      Member(
-          name: name,
-          start: start,
-          end: start,
-          docId: '-',
-         ),
-    );
+    members.add(member);
 
     await membersDB
-        .doc(FirebaseAuth.instance.currentUser!.uid.toString())
+        .doc(curUserID)
         .collection('members')
         .add(scheduleInfo);
     notifyListeners();
@@ -91,7 +84,7 @@ class MemberProvider with ChangeNotifier, DiagnosticableTreeMixin {
         .update(<String, dynamic>{
       "name": schedule.name,
       "start": schedule.start,
-      "end": schedule.end,
+      "duration": schedule.duration,
     });
     notifyListeners();
   }
@@ -113,8 +106,10 @@ class Member {
   Member({
     required this.name,
     required this.start,
-    required this.end,
+    required this.duration,
     required this.docId,
+    required this.age,
+    required this.isMan,
     //this.recurrenceRule
   });
 
@@ -122,9 +117,13 @@ class Member {
 
   DateTime start;
 
-  DateTime end;
+  String duration;
 
   String docId;
+
+  int age;
+
+  bool isMan;
 
 //String? recurrenceRule;
 }

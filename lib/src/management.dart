@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:mive/provider/memberProvider.dart';
 import 'package:mive/src/menutest.dart';
 
-class Management extends StatelessWidget {
-  const Management({Key? key}) : super(key: key);
+class Management extends StatefulWidget {
+  Management({Key? key, this.mem}) : super(key: key);
+  Member? mem;
 
   @override
+  State<Management> createState() => _ManagementState();
+}
+
+class _ManagementState extends State<Management> {
+  @override
   Widget build(BuildContext context) {
+    // if(widget.mem == null){
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(content: Text('Error')));
+    //   Navigator.pop(context);
+    // }
     return Scaffold(
       appBar: AppBar(
         shadowColor: Colors.white,
@@ -13,14 +25,14 @@ class Management extends StatelessWidget {
         automaticallyImplyLeading: false,
         centerTitle: false,
         title: TextButton(
-            onPressed: () => Navigator.pushNamed(context, '/'),
+            onPressed: () => Navigator.popUntil(context, ModalRoute.withName('/')),
             child: const Text(
               'MIVE',
               style: TextStyle(color: Colors.white),
             )),
       ),
       backgroundColor: const Color(0xff4AC1F2),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -38,7 +50,7 @@ class Management extends StatelessWidget {
                     ),
                   ),
                 ),
-                onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context)=>MyHomePage()));},
+                onTap: () {Navigator.popUntil(context, ModalRoute.withName('/'));},
               ),
             ),
             const SizedBox(

@@ -53,8 +53,8 @@ class MyApp extends StatelessWidget {
               '/login': (context) => const Login(),
               '/signin': (context) => const Signin(),
               '/addmember': (context) => const AddMember(),
-              '/management': (context) => const Management(),
-              '/googlemap' : (context) => MapSample(),
+              '/management': (context) => Management(),
+              '/googlemap' : (context) => const MapSample(),
             }));
   }
 }

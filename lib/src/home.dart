@@ -74,32 +74,32 @@ class _HomePageState extends State<HomePage> {
           allowDragAndDrop: true,
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showGeneralDialog(
-            barrierLabel: "Label",
-            barrierDismissible: true,
-            barrierColor: Colors.black.withOpacity(0.5),
-            transitionDuration: const Duration(milliseconds: 300),
-            context: context,
-            pageBuilder: (context, anim1, anim2) {
-              return const AddSchedule();
-            },
-            transitionBuilder: (context, anim1, anim2, child) {
-              return SlideTransition(
-                position: Tween(begin: const Offset(0, 1), end: const Offset(0, 0))
-                    .animate(anim1),
-                child: child,
-              );
-            },
-          );
-        },
-        child: const Icon(
-          Icons.add,
-          size: 50,
-        ),
-        backgroundColor: const Color(0xff4AC1F2),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     showGeneralDialog(
+      //       barrierLabel: "Label",
+      //       barrierDismissible: true,
+      //       barrierColor: Colors.black.withOpacity(0.5),
+      //       transitionDuration: const Duration(milliseconds: 300),
+      //       context: context,
+      //       pageBuilder: (context, anim1, anim2) {
+      //         return const AddSchedule();
+      //       },
+      //       transitionBuilder: (context, anim1, anim2, child) {
+      //         return SlideTransition(
+      //           position: Tween(begin: const Offset(0, 1), end: const Offset(0, 0))
+      //               .animate(anim1),
+      //           child: child,
+      //         );
+      //       },
+      //     );
+      //   },
+      //   child: const Icon(
+      //     Icons.add,
+      //     size: 50,
+      //   ),
+      //   backgroundColor: const Color(0xff4AC1F2),
+      // ),
     );
   }
 }
