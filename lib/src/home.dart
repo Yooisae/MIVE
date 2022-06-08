@@ -16,10 +16,11 @@ class Home extends StatelessWidget {
     return StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (BuildContext context, AsyncSnapshot<User?> user) {
-        if (user.hasData) {
-          return const HomePage();
-        } else {
+        if (!user.hasData) {
           return const Signin();
+        } else {
+          print('user ID: ${user.data?.uid.toString()}');
+          return const HomePage();
         }
       },
     );

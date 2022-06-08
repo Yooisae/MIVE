@@ -20,7 +20,7 @@ class AddMember extends StatefulWidget {
 }
 
 class _AddMemberState extends State<AddMember> {
-  DateTime startTime = DateTime.parse(DateTime.now().toString());
+  DateTime startDate = DateTime.parse(DateTime.now().toString());
   DateTime endTime =
       DateTime.parse(DateTime.now().add(const Duration(hours: 2)).toString());
   final TextEditingController nameController = TextEditingController();
@@ -63,7 +63,8 @@ class _AddMemberState extends State<AddMember> {
   List<String> days = [];
   String? duration = '8week';
   final formKey = GlobalKey<FormState>();
-  DateTime _dateTime = DateTime.now();
+  final DateTime _dateTime = DateTime.now();
+  TimeOfDay startTime = const TimeOfDay(hour: 20, minute: 00);
 
 
   @override
@@ -104,7 +105,7 @@ class _AddMemberState extends State<AddMember> {
                     '회원추가',
                     style: TextStyle(
                       color: Color(0xff4AC1F2),
-                      fontSize: 35,
+                      fontSize: 30,
                     ),
                   ),
                   const SizedBox(
@@ -179,15 +180,15 @@ class _AddMemberState extends State<AddMember> {
                       type: DateTimePickerType.date,
                       dateMask: 'd MMM, yyyy',
                       //controller: _controller1,//.text(startTime.toString()),
-                      initialValue: startTime.toString(),
+                      initialValue: startDate.toString(),
                       firstDate: DateTime(2000),
                       lastDate: DateTime(2100),
                       icon: const Icon(Icons.event),
                       dateLabelText: 'Start Date',
                       timeLabelText: "Start Time",
                       onChanged: (val) => setState(() {
-                            startTime = DateTime.parse(val);
-                            val = startTime.add(Duration(hours: 24)).toString();
+                            startDate = DateTime.parse(val);
+                            val = startDate.add(Duration(hours: 24)).toString();
                           }),
                       validator: (val) {
                         print(val);
@@ -207,7 +208,9 @@ class _AddMemberState extends State<AddMember> {
                       timePickerEntryModeInput: false,
                       timeLabelText: "Start Time",
                       onChanged: (val) => setState(() {
-                        print('이상하네: $val');
+                        startTime = TimeOfDay(hour: DateTime.parse(val).hour, minute: DateTime.parse(val).minute);
+                        print('start time: $startTime');
+                        print('$val');
                       }),
                       validator: (val) {
                       },
@@ -300,7 +303,7 @@ class _AddMemberState extends State<AddMember> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Processing Data')),
                           );
-                          Member member = Member(name: nameController.text, start: startTime, duration: duration.toString(), docId: "-", age: int.parse(ageController.text), isMan: isSelected[0]);
+                          Member member = Member(name: nameController.text, start: startDate, duration: duration.toString(), docId: "-", age: int.parse(ageController.text), isMan: isSelected[0]);
                           context.read<MemberProvider>().addMember(member);
                           nameController.clear();
                           ageController.clear();

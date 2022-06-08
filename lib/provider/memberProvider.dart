@@ -60,6 +60,9 @@ class MemberProvider with ChangeNotifier, DiagnosticableTreeMixin {
   }
 
   void addMember(Member member) async {
+    print(
+      'add cur user id: ${curUserID}'
+    );
     Map<String, dynamic> scheduleInfo = <String, dynamic>{
       "name": member.name,
       "start": Timestamp.fromDate(member.start),

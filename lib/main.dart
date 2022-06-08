@@ -9,6 +9,7 @@ import 'package:mive/provider/scheduleProvider.dart';
 import 'package:mive/src/addMember.dart';
 import 'package:mive/src/home.dart';
 import 'package:mive/src/management.dart';
+import 'package:mive/src/training.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'src/googleMapTest.dart';
@@ -55,6 +56,7 @@ class MyApp extends StatelessWidget {
               '/addmember': (context) => const AddMember(),
               '/management': (context) => Management(),
               '/googlemap' : (context) => const MapSample(),
+              '/training' : (context) => const Training(),
             }));
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mive/provider/memberProvider.dart';
 import 'package:mive/src/menutest.dart';
 
@@ -10,7 +11,16 @@ class Management extends StatefulWidget {
   State<Management> createState() => _ManagementState();
 }
 
-class _ManagementState extends State<Management> {
+class _ManagementState extends State<Management> with TickerProviderStateMixin {
+
+  late final AnimationController _lottieController;
+
+  @override
+  void initState(){
+    super.initState();
+
+    _lottieController = AnimationController(vsync: this);
+  }
   @override
   Widget build(BuildContext context) {
     // if(widget.mem == null){
@@ -29,6 +39,7 @@ class _ManagementState extends State<Management> {
             child: const Text(
               'MIVE',
               style: TextStyle(color: Colors.white),
+
             )),
       ),
       backgroundColor: const Color(0xff4AC1F2),
@@ -40,17 +51,18 @@ class _ManagementState extends State<Management> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: GestureDetector(
-                child: AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20.0),
-                    child: Image.asset(
-                      'assets/exercise.png',
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                ),
-                onTap: () {Navigator.popUntil(context, ModalRoute.withName('/'));},
+                child: Lottie.asset('assets/exercise.json',),
+                // AspectRatio(
+                //   aspectRatio: 16 / 9,
+                //   child: ClipRRect(
+                //     borderRadius: BorderRadius.circular(20.0),
+                //     child: Image.asset(
+                //       'assets/exercise.png',
+                //       fit: BoxFit.fill,
+                //     ),
+                //   ),
+                // ),
+                onTap: () {Navigator.popUntil(context, ModalRoute.withName('/training'));},
               ),
             ),
             const SizedBox(
@@ -59,15 +71,7 @@ class _ManagementState extends State<Management> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: GestureDetector(
-                child: AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20.0),
-                      child: Image.asset(
-                        'assets/diet.png',
-                        fit: BoxFit.fill,
-                      ),
-                    )),
+                child: Lottie.asset('assets/diet.json'),
                 onTap: () {},
               ),
             ),
