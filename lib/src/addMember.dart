@@ -8,7 +8,9 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:time_picker_widget/time_picker_widget.dart';
 
+import '../provider/authProvider.dart';
 import '../provider/memberProvider.dart';
+import 'management.dart';
 
 class AddMember extends StatefulWidget {
   const AddMember({
@@ -36,7 +38,7 @@ class _AddMemberState extends State<AddMember> {
     '15week',
     '18week',
   ];
-  List<DayInWeek> _days = [
+  final List<DayInWeek> _days = [
     DayInWeek(
       "Sun",
     ),
@@ -44,8 +46,7 @@ class _AddMemberState extends State<AddMember> {
       "Mon",
     ),
     DayInWeek(
-        "Tue",
-        isSelected: true
+      "Tue",
     ),
     DayInWeek(
       "Wed",
@@ -65,10 +66,11 @@ class _AddMemberState extends State<AddMember> {
   final formKey = GlobalKey<FormState>();
   final DateTime _dateTime = DateTime.now();
   TimeOfDay startTime = const TimeOfDay(hour: 20, minute: 00);
-
+  late AuthProvider _authProvider;
 
   @override
   Widget build(BuildContext context) {
+    _authProvider = Provider.of<AuthProvider>(context, listen: false);
     return Scaffold(
         backgroundColor: const Color(0xff4AC1F2),
         appBar: AppBar(
@@ -177,7 +179,7 @@ class _AddMemberState extends State<AddMember> {
                   ),
                   DateTimePicker(
                       //textAlign: TextAlign.center,
-                      type: DateTimePickerType.date,
+                      type: DateTimePickerType.dateTimeSeparate,
                       dateMask: 'd MMM, yyyy',
                       //controller: _controller1,//.text(startTime.toString()),
                       initialValue: startDate.toString(),
@@ -198,37 +200,40 @@ class _AddMemberState extends State<AddMember> {
                       onSaved:
                           (val) {} //setState(() => _valueSaved1 = val ?? ''),
                       ),
-                  DateTimePicker(
-                    //textAlign: TextAlign.center,
-                      type: DateTimePickerType.time,
-                      dateMask: 'HH',
-                      //controller: _controller1,//.text(startTime.toString()),
-                      initialValue: const Duration(hours: 20, minutes: 0).toString(),
-                      initialTime: const TimeOfDay(hour: 20, minute: 0),
-                      timePickerEntryModeInput: false,
-                      timeLabelText: "Start Time",
-                      onChanged: (val) => setState(() {
-                        startTime = TimeOfDay(hour: DateTime.parse(val).hour, minute: DateTime.parse(val).minute);
-                        print('start time: $startTime');
-                        print('$val');
-                      }),
-                      validator: (val) {
-                      },
-                      onSaved:
-                          (val) {} //setState(() => _valueSaved1 = val ?? ''),
-                  ),
+                  // DateTimePicker(
+                  //   //textAlign: TextAlign.center,
+                  //     type: DateTimePickerType.time,
+                  //     dateMask: 'HH',
+                  //     //controller: _controller1,//.text(startTime.toString()),
+                  //     initialValue: const Duration(hours: 20, minutes: 0).toString(),
+                  //     initialTime: const TimeOfDay(hour: 20, minute: 0),
+                  //     timePickerEntryModeInput: false,
+                  //     timeLabelText: "Start Time",
+                  //     onChanged: (val) => setState(() {
+                  //       //startTime = TimeOfDay(hour: TimeOfDay.fromDateTime(time), minute: DateTime.parse(val).minute);
+                  //       print('start time: $startTime');
+                  //       print('${val}');
+                  //     }),
+                  //     validator: (val) {
+                  //     },
+                  //     onSaved:
+                  //         (val) {} //setState(() => _valueSaved1 = val ?? ''),
+                  // ),
                   const SizedBox(
                     height: 10,
                   ),
                   const Divider(
                     color: Colors.black,
                   ),
-                  const Text('PT days', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
+                  const Text(
+                    'PT days',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
                   Center(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SelectWeekDays(
-                        fontSize:10,
+                        fontSize: 10,
                         fontWeight: FontWeight.w500,
                         days: _days,
                         border: false,
@@ -237,11 +242,12 @@ class _AddMemberState extends State<AddMember> {
                           gradient: const LinearGradient(
                             begin: Alignment.topLeft,
                             colors: [Color(0xff4AC1F2), Color(0xff1D9BCF)],
-                            tileMode:
-                            TileMode.repeated, // repeats the gradient over the canvas
+                            tileMode: TileMode
+                                .repeated, // repeats the gradient over the canvas
                           ),
                         ),
-                        onSelect: (values) { // <== Callback to handle the selected days
+                        onSelect: (values) {
+                          // <== Callback to handle the selected days
                           days.clear();
                           days.addAll(values);
                           print(values);
@@ -298,16 +304,31 @@ class _AddMemberState extends State<AddMember> {
                       style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
                               const Color(0xff1D9BCF))),
-                      onPressed: () async{
+                      onPressed: () async {
                         if (formKey.currentState!.validate()) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Processing Data')),
                           );
-                          Member member = Member(name: nameController.text, start: startDate, duration: duration.toString(), docId: "-", age: int.parse(ageController.text), isMan: isSelected[0]);
-                          context.read<MemberProvider>().addMember(member);
+                          Member member = await Member(
+                              name: nameController.text,
+                              start: startDate,
+                              duration: duration.toString(),
+                              docId: "-",
+                              age: int.parse(ageController.text),
+                              isMan: isSelected[0],
+                              day: days);
+                          String memberid = await context
+                              .read<MemberProvider>()
+                              .addMember(member);
                           nameController.clear();
                           ageController.clear();
-                          Navigator.pushNamed(context, '/management', arguments: {"mem":member});
+                          print('addMember: $memberid');
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      Management(mem: memberid)));
+                          //Navigator.pushNamed(context, '/management', arguments: Management(mem: memberid));
                           //Navigator.popUntil(context, ModalRoute.withName('/'));
                         }
                       },

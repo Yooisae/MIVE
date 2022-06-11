@@ -13,30 +13,9 @@ class MapSample extends StatefulWidget {
 }
 
 class MapSampleState extends State<MapSample> {
-  // final Completer<GoogleMapController> _controller = Completer();
-  //
-  // void _currentLocation() async {
-  //   final GoogleMapController controller = await _controller.future;
-  //   LocationData? currentLocation;
-  //   var location = Location();
-  //   try {
-  //     currentLocation = await location.getLocation();
-  //   } on Exception {
-  //     currentLocation = null;
-  //   }
-  //
-  //   controller.animateCamera(CameraUpdate.newCameraPosition(
-  //     CameraPosition(
-  //       bearing: 0,
-  //       target: LatLng(currentLocation!.latitude!.toDouble(), currentLocation.longitude!.toDouble()),
-  //       zoom: 14.0,
-  //     ),
-  //   ));
-  // }
-
-  LatLng _initialcameraposition = LatLng(20.5937, 78.9629);
+  final LatLng _initialcameraposition = LatLng(20.5937, 78.9629);
   GoogleMapController? _controller;
-  Location _location = Location();
+  final Location _location = Location();
 
   void _onMapCreated(GoogleMapController _cntlr)
   {
@@ -63,11 +42,6 @@ class MapSampleState extends State<MapSample> {
         myLocationEnabled: true,
         myLocationButtonEnabled: true,
       ),
-      // floatingActionButton: FloatingActionButton.extended(
-      //   onPressed: _currentLocation,
-      //   label: const Text('To the lake!'),
-      //   icon: const Icon(Icons.directions_boat),
-      // ),
     );
   }
 

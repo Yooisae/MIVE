@@ -14,8 +14,18 @@ class ScheduleProvider with ChangeNotifier, DiagnosticableTreeMixin {
 
   List<Meeting> mySchedules = [];
 
+  Map<String, String> changeDay = {
+    'Mon' : 'MO',
+    'Tue' : 'TU',
+    'Wed' : 'WE',
+    'Thu' : 'TH',
+    'Fri' : 'FR',
+    'Sat' : 'SA',
+    'Sun' : 'SU'
+  };
+
   final scheduleDB = FirebaseFirestore.instance
-      .collection('schedules'); //.doc('yooisae').collection('schedules');
+      .collection('members'); //.doc('yooisae').collection('schedules');
   DocumentSnapshot? curUserDB;
   String? curUserID;
 
@@ -32,24 +42,37 @@ class ScheduleProvider with ChangeNotifier, DiagnosticableTreeMixin {
         }
         scheduleDB
             .doc(curUserID)
-            .collection('schedules')
+            .collection('members')
             .snapshots()
             .listen((event) {
           mySchedules = [];
-          for (final schedule in event.docs) {
-            if(schedule.data().isEmpty){
+          for (final member in event.docs) {
+            if(member.data().isEmpty){
               continue;
             }
+            DateTime _start = member.data()['start'].toDate();
+            DateTime _end = _start.add(const Duration(hours: 1));
+            List<String> byday = member.data()['day'].cast<String>();
+            List<String> byDay = [];
+            for(final temp in byday){
+              byDay.add(changeDay[temp]!);
+            }
+            String ByDay = byDay.join(',');
+            int count = int.parse(member.data()['duration'].toString().replaceAll('week', '')) * byday.length;
+            String _rule = 'FREQ=WEEKLY;INTERVAL=1;BYDAY='+ByDay+';COUNT='+count.toString();
+            print(_rule);
             mySchedules.add(
               Meeting(
-                eventName: schedule.data()['schedule name'].toString(),
-                from: schedule.data()['schedule start'].toDate(),
-                to: schedule.data()['schedule end'].toDate(),
+                eventName: member.data()['name'].toString(),
+                from: _start,
+                to: _end,
                 isAllDay: false,
-                docId: schedule.id,
-                background: schedule.data()['type'] == "Personal"?const Color(0xFFB90000) : const Color(0xff4AC1F2),
-                type: schedule.data()['type'],
-                //recurrenceRule: 'FREQ=DAILY;INTERVAL=7;COUNT=10'
+                docId: member.id,
+                background: const Color(0xff4AC1F2),
+                isman: member.data()['isMan'],
+                recurrenceRule: _rule,
+
+                  //FREQ=DAILY;INTERVAL=7;COUNT=10'
               ),
             );
             notifyListeners();
@@ -60,49 +83,49 @@ class ScheduleProvider with ChangeNotifier, DiagnosticableTreeMixin {
     });
   }
 
-  void addSchedule(
-      String name,
-      DateTime from,
-      DateTime to,
-      String type,
-      ) async {
-    Map<String, dynamic> scheduleInfo = <String, dynamic>{
-      "schedule name": name,
-      "schedule start": Timestamp.fromDate(from),
-      "schedule end": Timestamp.fromDate(to),
-      "type" : type,
-    };
-    mySchedules.add(
-      Meeting(
-          eventName: name,
-          from: from,
-          to: to,
-          isAllDay: false,
-          docId: '-',
-          background: type == 'Personal'?const Color(0xFFB90000) : const Color(0xff4AC1F2),
-          type: type),
-    );
+  // void addSchedule(
+  //     String name,
+  //     DateTime from,
+  //     DateTime to,
+  //     String type,
+  //     ) async {
+  //   Map<String, dynamic> scheduleInfo = <String, dynamic>{
+  //     "schedule name": name,
+  //     "schedule start": Timestamp.fromDate(from),
+  //     "schedule end": Timestamp.fromDate(to),
+  //     "type" : type,
+  //   };
+    // mySchedules.add(
+    //   Meeting(
+    //       eventName: name,
+    //       from: from,
+    //       to: to,
+    //       isAllDay: false,
+    //       docId: '-',
+    //       background: type == 'Personal'?const Color(0xFFB90000) : const Color(0xff4AC1F2),
+    //       type: type),
+    // );
+  //
+  //   await scheduleDB
+  //       .doc(FirebaseAuth.instance.currentUser!.uid.toString())
+  //       .collection('schedules')
+  //       .add(scheduleInfo);
+  //   notifyListeners();
+  // }
 
-    await scheduleDB
-        .doc(FirebaseAuth.instance.currentUser!.uid.toString())
-        .collection('schedules')
-        .add(scheduleInfo);
-    notifyListeners();
-  }
-
-  void editSchedule(Meeting schedule) {
-    scheduleDB
-        .doc(curUserID)
-        .collection('schedules')
-        .doc(schedule.docId)
-        .update(<String, dynamic>{
-      "schedule name": schedule.eventName,
-      "schedule start": schedule.from,
-      "schedule end": schedule.to,
-      "type" : schedule.type,
-    });
-    notifyListeners();
-  }
+  // void editSchedule(Meeting schedule) {
+  //   scheduleDB
+  //       .doc(curUserID)
+  //       .collection('schedules')
+  //       .doc(schedule.docId)
+  //       .update(<String, dynamic>{
+  //     "schedule name": schedule.eventName,
+  //     "schedule start": schedule.from,
+  //     "schedule end": schedule.to,
+  //     "type" : schedule.type,
+  //   });
+  //   notifyListeners();
+  // }
 
   void deleteSchedule(Meeting schedule) async {
     await scheduleDB
@@ -125,8 +148,8 @@ class Meeting {
     required this.background,
     required this.isAllDay,
     required this.docId,
-    required this.type,
-    //this.recurrenceRule
+    required this.isman,
+    this.recurrenceRule
   });
 
   /// Event name which is equivalent to subject property of [Appointment].
@@ -144,9 +167,9 @@ class Meeting {
   /// IsAllDay which is equivalent to isAllDay property of [Appointment].
   bool isAllDay;
 
-  String type;
+  bool isman;
 
   String docId;
 
-//String? recurrenceRule;
+  String? recurrenceRule;
 }

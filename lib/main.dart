@@ -7,9 +7,11 @@ import 'package:mive/provider/authProvider.dart';
 import 'package:mive/provider/memberProvider.dart';
 import 'package:mive/provider/scheduleProvider.dart';
 import 'package:mive/src/addMember.dart';
+import 'package:mive/src/diet.dart';
+import 'package:mive/src/trainingForm.dart';
 import 'package:mive/src/home.dart';
 import 'package:mive/src/management.dart';
-import 'package:mive/src/training.dart';
+import 'package:mive/src/membermanage.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'src/googleMapTest.dart';
@@ -46,6 +48,7 @@ class MyApp extends StatelessWidget {
               primarySwatch: Colors.blue,
               textTheme:
                   const TextTheme(bodyText2: TextStyle(color: Colors.black)),
+              iconTheme: const IconThemeData(color: Color(0xff4AC1F2), )
             ),
             home: const Home(),
             initialRoute: '/login',
@@ -54,9 +57,11 @@ class MyApp extends StatelessWidget {
               '/login': (context) => const Login(),
               '/signin': (context) => const Signin(),
               '/addmember': (context) => const AddMember(),
-              '/management': (context) => Management(),
+              '/management': (context) => Management(mem: '',),
               '/googlemap' : (context) => const MapSample(),
-              '/training' : (context) => const Training(),
+              '/exercise' : (context) => ExerciseFrom(memberId: '',),
+              '/diet' : (context) => const Diet(),
+              '/membermanage' : (context) => const MemberManage(),
             }));
   }
 }

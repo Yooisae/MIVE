@@ -1,6 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ class MemberProvider with ChangeNotifier, DiagnosticableTreeMixin {
   }
 
   List<Member> members = [];
+  List ListMembers = [];
 
   final membersDB = FirebaseFirestore.instance
       .collection('members'); //.doc('yooisae').collection('schedules');
@@ -36,10 +38,13 @@ class MemberProvider with ChangeNotifier, DiagnosticableTreeMixin {
             .snapshots()
             .listen((event) {
           members = [];
+          ListMembers = [];
           for (final member in event.docs) {
-            if(member.data().isEmpty){
+            if (member.data().isEmpty) {
               continue;
             }
+            List<dynamic> tmp = member.data()['day'];
+            final List<String> day = tmp.cast<String>();
             members.add(
               Member(
                 name: member.data()['name'].toString(),
@@ -48,9 +53,14 @@ class MemberProvider with ChangeNotifier, DiagnosticableTreeMixin {
                 docId: member.id,
                 age: member.data()['age'],
                 isMan: member.data()['isMan'],
-                //recurrenceRule: 'FREQ=DAILY;INTERVAL=7;COUNT=10'
+                day: day,
               ),
             );
+            ListMembers.add({
+              'name': member.data()['name'].toString(),
+              'group': '개인PT',
+              'id': member.id
+            });
             notifyListeners();
           }
         });
@@ -59,24 +69,25 @@ class MemberProvider with ChangeNotifier, DiagnosticableTreeMixin {
     });
   }
 
-  void addMember(Member member) async {
-    print(
-      'add cur user id: ${curUserID}'
-    );
+  Future<String> addMember(Member member) async {
+    print('add cur user id: ${curUserID}');
     Map<String, dynamic> scheduleInfo = <String, dynamic>{
       "name": member.name,
       "start": Timestamp.fromDate(member.start),
       "duration": member.duration,
-      "age" : member.age,
-      "isMan" : member.isMan
+      "age": member.age,
+      "isMan": member.isMan,
+      "day": member.day,
     };
     members.add(member);
 
-    await membersDB
-        .doc(curUserID)
+    DocumentReference<Map<String, dynamic>> newmember = await membersDB
+        .doc(FirebaseAuth.instance.currentUser!.uid)
         .collection('members')
         .add(scheduleInfo);
     notifyListeners();
+    print('Provider: ${newmember.id}');
+    return newmember.id;
   }
 
   void editMember(Member schedule) {
@@ -101,20 +112,74 @@ class MemberProvider with ChangeNotifier, DiagnosticableTreeMixin {
     notifyListeners();
   }
 
+  Member getmeber(String id) {
+    for (int i = 0; i < members.length; i++) {
+      if (members[i].docId == id) {
+        return members[i];
+      }
+    }
+    return members[0];
+  }
+
+  List<String> sequence = ['foot', 'knee', 'back'];
+  List<String> memSeq = [];
+  List<String> get memseq => memSeq;
+
+  Future<List<String>> memberSequence(String id) async{
+    memSeq.clear();
+    await FirebaseFirestore.instance
+        .collection('members')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('members')
+        .doc(id)
+        .get()
+        .then((value) async{
+      for (int i = 0; i < 3; i++) {
+        await FirebaseFirestore.instance
+            .collection('exercise')
+            .doc(sequence[i])
+            .collection(sequence[i])
+            .doc(value['exercise'][i])
+            .get()
+            .then((value) {
+          if (value.data() != null || value.exists) {
+            memSeq.add(value.data()!['c'][0]);
+            memSeq.add(value.data()!['i'][0]);
+            memSeq.add(value.data()!['b'][0]);
+            memSeq.add(value.data()!['g'][0]);
+            print(value.data()!['c'][0]);
+            print(value.data()!['i'][0]);
+            print(value.data()!['b'][0]);
+            print(value.data()!['g'][0]);
+          }
+          notifyListeners();
+        });
+      }
+
+    });
+    print('제발좀${memSeq.length}');
+    print(memSeq.first);
+    return memSeq;
+    notifyListeners();
+  }
+
   List<Member> get getMembers => members;
+
+  List getListMembers() {
+    return ListMembers;
+  }
 }
 
 class Member {
   /// Creates a meeting class with required details.
-  Member({
-    required this.name,
-    required this.start,
-    required this.duration,
-    required this.docId,
-    required this.age,
-    required this.isMan,
-    //this.recurrenceRule
-  });
+  Member(
+      {required this.name,
+      required this.start,
+      required this.duration,
+      required this.docId,
+      required this.age,
+      required this.isMan,
+      required this.day});
 
   String name;
 
@@ -128,5 +193,7 @@ class Member {
 
   bool isMan;
 
-//String? recurrenceRule;
+  List<String> day;
+
+  String group = 'Personal';
 }
